@@ -3,7 +3,7 @@ import secrets
 from django.db import models
 
 # Create your models here.
-class Enterprise(models.Model):
+class Company(models.Model):
     """
     Representa um sistema/cliente que usa o microservico.
     Cada empresa recebe um hash único de 16 caracteres para autenticação.
@@ -18,8 +18,8 @@ class Enterprise(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = 'Enterprise'
-        verbose_name_plural = 'Enterprises'
+        verbose_name = 'Company'
+        verbose_name_plural = 'Companies'
 
     def __str__(self):
         return self.name
@@ -29,16 +29,16 @@ class Target(models.Model):
     Vincula um usuário de um sistema externo ao microserviço.
     O user_id e o ID do usuário no sistema cliente (ex: User.id do portfolio).
     """
-    enterprise = models.ForeignKey(Enterprise, on_delete=models.CASCADE, related_name='targets')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='targets')
     user_id = models.IntegerField()
 
     class Meta:
         verbose_name = 'Target'
         verbose_name_plural = 'Targets'
-        unique_together = ['enterprise', 'user_id']
+        unique_together = ['company', 'user_id']
 
     def __str__(self):
-        return f'{self.enterprise.name} - User {self.user_id}'
+        return f'{self.company.name} - User {self.user_id}'
 
 class Notification(models.Model):
     """
