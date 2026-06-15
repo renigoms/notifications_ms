@@ -10,7 +10,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         read_only_fields = ['id','create_at']
 
 
-class NotificationCreateSerializer(serializers.ModelSerializer):
+class NotificationCreateSerializer(serializers.Serializer):
     """
     Serializer para criar notificações via API.
     Recebe user_id e message. O target é resolvido automáticamente

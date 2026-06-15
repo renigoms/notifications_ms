@@ -39,7 +39,7 @@ class NotificationsListView(APIView):
         # filtro opcional por is_read
         is_read_param = request.query_params.get('is_read')
         if is_read_param is not None:
-            is_read = is_read_param.lower in ['true', '1', 'yes']
+            is_read = is_read_param.lower() in ['true', '1', 'yes']
             notifications = notifications.filter(is_read=is_read)
 
         serializer = NotificationSerializer(notifications, many=True)

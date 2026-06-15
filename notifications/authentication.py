@@ -14,7 +14,7 @@ def get_company_from_headers(request):
         raise AuthenticationFailed('Header X-Api-Key e obrigatório.')
 
     try:
-        company = Company.objects.get(hash_key=api_key)
+        company = Company.objects.get(hash=api_key)
     except Company.DoesNotExist:
         raise AuthenticationFailed('X-Api-Key inválida.')
 
