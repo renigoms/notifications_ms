@@ -1,4 +1,4 @@
-from django.db.models import Model
+from django.db.models import Model, QuerySet
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +18,7 @@ class UnreadNotificationsCountView(APIView):
 
     def get(self, request):
         target = get_target_from_headers(request)
-        count = Notification.objects.filter(target=target).count()
+        count = Notification.objects.filter(target=target, is_read=False).count()
         return Response({'count': count})
 
 class NotificationsListView(APIView):
@@ -63,6 +63,26 @@ class NotificationMarkAsReadView(APIView):
         notification.save()
 
         serializer = NotificationSerializer(notification)
+        return Response(serializer.data)
+
+class NotificationMarkAllAsReadView(APIView):
+    """
+    PATCH /api/notificacoes/marcar-todas-lidas/
+    Marcar todas como lida
+    """
+    def patch(self, request):
+        target = get_target_from_headers(request)
+
+        try:
+            notifications: QuerySet = Notification.objects.filter(target=target)
+        except Notification.DoesNotExist:
+            return Response({'erro': 'Notificações não encontradas'}, status=404)
+
+        for notification in notifications:
+            notification.is_read = True
+            notification.save()
+
+        serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data)
 
 class NotificationCreateView(APIView):

@@ -44,6 +44,7 @@ class Notification(models.Model):
     """
     Uma notificação enviada para um target específico.
     """
+    title = models.CharField(max_length=200, default='Título')
     target = models.ForeignKey(Target, on_delete=models.CASCADE, related_name='notifications')
     message = models.TextField()
     is_read = models.BooleanField(default=False)
