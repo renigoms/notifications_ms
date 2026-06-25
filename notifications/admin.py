@@ -18,7 +18,7 @@ class TargetAdmin(admin.ModelAdmin):
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_filter = ['is_read', 'target__company']
-    list_display = ['target', 'short_message', 'is_read', 'create_at']
+    list_display = ['target', 'title', 'short_message', 'is_read', 'create_at']
     list_editable = ['is_read']
 
     def short_message(self, obj):

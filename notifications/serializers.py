@@ -6,7 +6,7 @@ from notifications.models import Notification
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'is_read', 'create_at']
+        fields = ['id', 'title', 'message', 'is_read', 'create_at']
         read_only_fields = ['id','create_at']
 
 
@@ -18,4 +18,5 @@ class NotificationCreateSerializer(serializers.Serializer):
     """
 
     user_id = serializers.IntegerField()
+    title = serializers.CharField(required=False, default='Título', max_length=200)
     message = serializers.CharField()

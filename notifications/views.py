@@ -95,7 +95,7 @@ class NotificationCreateView(APIView):
     apenas LÊ as notificações.
 
     Headers: X-Api-Key (identifica a empresa)
-    Body: {"user_id": 1, "message": "Texto da notificação"}
+    Body: {"user_id": 1, "title": "Titulo", "message": "Texto da notificação"}
     """
 
     def post(self, request):
@@ -108,6 +108,6 @@ class NotificationCreateView(APIView):
         target, created = Target.objects.get_or_create(company=company, user_id=serializer.validated_data['user_id'])
 
         # Cria a notificação
-        notification = Notification.objects.create(target=target, message=serializer.validated_data['message'])
+        notification = Notification.objects.create(target=target, title=serializer.validated_data["title"], message=serializer.validated_data['message'])
 
         return Response(NotificationSerializer(notification).data, status=status.HTTP_201_CREATED)
