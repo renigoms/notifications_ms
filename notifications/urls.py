@@ -26,4 +26,8 @@ urlpatterns = [
         name='notification-mark-as-read'
     ),
 
+    path('api/notificacoes/marcar-todas-lidas/',
+         views.NotificationMarkAllAsReadView.as_view(),
+         name='notification-mark-all-as-read'),
+
 ]

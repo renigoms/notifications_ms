@@ -1,4 +1,4 @@
-from django.db.models import Model
+from django.db.models import Model, QuerySet
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +18,7 @@ class UnreadNotificationsCountView(APIView):
 
     def get(self, request):
         target = get_target_from_headers(request)
-        count = Notification.objects.filter(target=target).count()
+        count = Notification.objects.filter(target=target, is_read=False).count()
         return Response({'count': count})
 
 class NotificationsListView(APIView):
@@ -65,6 +65,26 @@ class NotificationMarkAsReadView(APIView):
         serializer = NotificationSerializer(notification)
         return Response(serializer.data)
 
+class NotificationMarkAllAsReadView(APIView):
+    """
+    PATCH /api/notificacoes/marcar-todas-lidas/
+    Marcar todas como lida
+    """
+    def patch(self, request):
+        target = get_target_from_headers(request)
+
+        try:
+            notifications: QuerySet = Notification.objects.filter(target=target)
+        except Notification.DoesNotExist:
+            return Response({'erro': 'Notificações não encontradas'}, status=404)
+
+        for notification in notifications:
+            notification.is_read = True
+            notification.save()
+
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data)
+
 class NotificationCreateView(APIView):
     """
     POST /api/notificacoes/criar/
@@ -75,7 +95,7 @@ class NotificationCreateView(APIView):
     apenas LÊ as notificações.
 
     Headers: X-Api-Key (identifica a empresa)
-    Body: {"user_id": 1, "message": "Texto da notificação"}
+    Body: {"user_id": 1, "title": "Titulo", "message": "Texto da notificação"}
     """
 
     def post(self, request):
@@ -88,6 +108,6 @@ class NotificationCreateView(APIView):
         target, created = Target.objects.get_or_create(company=company, user_id=serializer.validated_data['user_id'])
 
         # Cria a notificação
-        notification = Notification.objects.create(target=target, message=serializer.validated_data['message'])
+        notification = Notification.objects.create(target=target, title=serializer.validated_data["title"], message=serializer.validated_data['message'])
 
         return Response(NotificationSerializer(notification).data, status=status.HTTP_201_CREATED)
